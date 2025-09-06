@@ -30,6 +30,13 @@ const User = sequelize.define('User', {
     timestamps: true
 });
 
+// Define associations
+User.associate = (models) => {
+    User.hasOne(models.Restaurant, {
+        foreignKey: 'user_id',
+        as: 'restaurant'
+    });
+};
 
 User.sync()
 export default User;
