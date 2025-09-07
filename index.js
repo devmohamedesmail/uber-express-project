@@ -4,7 +4,9 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 import { authRoutes } from './routes/authRoutes.js';
 import { restaurantRoutes } from './routes/resturantRoutes.js';
+import { menuRoutes } from './routes/menuRoutes.js';
 import { v2 as cloudinary } from 'cloudinary';
+
 
 
 
@@ -28,6 +30,7 @@ app.get('/', (req, res) => {
 });
 app.use('/api/auth', authRoutes);
 app.use('/api/resturants', restaurantRoutes);
+app.use('/api/menu', menuRoutes);
 
 
 

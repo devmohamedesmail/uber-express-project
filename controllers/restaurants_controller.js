@@ -6,8 +6,9 @@ import { v2 as cloudinary } from 'cloudinary';
 // Create a new restaurant
 export const createRestaurant = async (req, res) => {
   try {
-    const userId = req.user?.id; // Assuming you have auth middleware
+  
     const {
+      userId,
       name,
       image,
       location,
@@ -55,10 +56,26 @@ export const createRestaurant = async (req, res) => {
       });
     }
 
+    // Handle image upload to Cloudinary
+    let imageUrl = image; // Use provided image URL if no file uploaded
+    if (req.file) {
+      const uploadResult = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'restaurants' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+      imageUrl = uploadResult.secure_url;
+    }
+
     // Create restaurant
     const restaurant = await Restaurant.create({
       name,
-      image,
+      image: imageUrl,
       location,
       address,
       phone,
@@ -79,7 +96,7 @@ export const createRestaurant = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Create restaurant error:', error);
+    
     res.status(500).json({
       success: false,
       message: "Failed to create restaurant",
@@ -101,11 +118,11 @@ export const getAllRestaurants = async (req, res) => {
 
     const restaurants = await Restaurant.findAndCountAll({
       where: whereClause,
-      include: [{
-        model: User,
-        as: 'owner',
-        attributes: ['id', 'name', 'identifier']
-      }],
+      // include: [{
+      //   model: User,
+      //   as: 'owner',
+      //   attributes: ['id', 'name', 'identifier']
+      // }],
       limit: parseInt(limit),
       offset: parseInt(offset),
       order: [['rating', 'DESC'], ['createdAt', 'DESC']]
@@ -141,11 +158,11 @@ export const getRestaurantById = async (req, res) => {
     const { id } = req.params;
 
     const restaurant = await Restaurant.findByPk(id, {
-      include: [{
-        model: User,
-        as: 'owner',
-        attributes: ['id', 'name', 'identifier']
-      }]
+      // include: [{
+      //   model: User,
+      //   as: 'owner',
+      //   attributes: ['id', 'name', 'identifier']
+      // }]
     });
 
     if (!restaurant) {
@@ -252,6 +269,21 @@ export const updateRestaurant = async (req, res) => {
     delete updateData.user_id;
     delete updateData.rating; // Rating should be calculated from reviews
     delete updateData.total_reviews; // Should be calculated from reviews
+
+    // Handle image upload to Cloudinary
+    if (req.file) {
+      const uploadResult = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'restaurants' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+      updateData.image = uploadResult.secure_url;
+    }
 
     // Update restaurant
     await restaurant.update(updateData);
