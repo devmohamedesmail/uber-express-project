@@ -7,9 +7,9 @@ const Menu = sequelize.define('Menu', {
         autoIncrement: true,
         primaryKey: true
     },
-   restaurant_id:{
+    restaurant_id: {
         type: DataTypes.INTEGER,
-   },
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false
@@ -30,18 +30,7 @@ const Menu = sequelize.define('Menu', {
         type: DataTypes.STRING,
         allowNull: true
     },
-   
-   
-    
-   
 
-  
- 
-
-
-  
-   
-   
 }, {
     tableName: 'menus',
     timestamps: true

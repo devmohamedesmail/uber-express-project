@@ -1,4 +1,4 @@
-import Restaurant from '../models/restaurant.js';
+import Restaurant from '../models/Restaurant.js';
 import User from '../models/User.js';
 import { Op } from 'sequelize';
 
