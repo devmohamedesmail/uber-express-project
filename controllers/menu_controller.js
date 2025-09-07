@@ -1,5 +1,5 @@
 import Menu from '../models/Menu.js';
-import Restaurant from '../models/restaurant.js';
+import Restaurant from '../models/Restaurant.js';
 import User from '../models/User.js';
 import { Op } from 'sequelize';
 import { v2 as cloudinary } from 'cloudinary';
