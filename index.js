@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 import { authRoutes } from './routes/authRoutes.js';
 import { restaurantRoutes } from './routes/resturantRoutes.js';
+import { v2 as cloudinary } from 'cloudinary';
 
 
 
@@ -29,7 +30,18 @@ app.use('/api/auth', authRoutes);
 app.use('/api/resturants', restaurantRoutes);
 
 
-app.listen(3000, () => {
+
+
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET,
+
+  });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
     connectDB();
-    console.log(`Server is running on http://localhost:3000`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

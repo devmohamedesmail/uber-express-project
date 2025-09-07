@@ -1,6 +1,7 @@
 import Restaurant from '../models/Restaurant.js';
 import User from '../models/User.js';
 import { Op } from 'sequelize';
+import { v2 as cloudinary } from 'cloudinary';
 
 // Create a new restaurant
 export const createRestaurant = async (req, res) => {
