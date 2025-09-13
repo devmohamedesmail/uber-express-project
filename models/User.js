@@ -38,5 +38,14 @@ User.associate = (models) => {
     });
 };
 
+User.associate = (models) => {
+    User.hasOne(models.Driver, {
+        foreignKey: 'user_id',
+        as: 'driver'
+    });
+};
+
+
+
 User.sync()
 export default User;

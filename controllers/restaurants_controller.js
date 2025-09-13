@@ -2,6 +2,7 @@ import Restaurant from '../models/Restaurant.js';
 import User from '../models/User.js';
 import { Op } from 'sequelize';
 import { v2 as cloudinary } from 'cloudinary';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 
 // Create a new restaurant
 export const createRestaurant = async (req, res) => {
@@ -58,18 +59,31 @@ export const createRestaurant = async (req, res) => {
 
     // Handle image upload to Cloudinary
     let imageUrl = image; // Use provided image URL if no file uploaded
+    // if (req.file) {
+    //   const uploadResult = await new Promise((resolve, reject) => {
+    //     const stream = cloudinary.uploader.upload_stream(
+    //       { folder: 'restaurants' },
+    //       (error, result) => {
+    //         if (error) return reject(error);
+    //         resolve(result);
+    //       }
+    //     );
+    //     stream.end(req.file.buffer);
+    //   });
+    //   imageUrl = uploadResult.secure_url;
+    // }
     if (req.file) {
-      const uploadResult = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: 'restaurants' },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
-      imageUrl = uploadResult.secure_url;
+      try {
+        const uploadResult = await uploadToCloudinary(req.file.buffer, 'restaurants');
+        imageUrl = uploadResult.secure_url;
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return res.status(400).json({
+          success: false,
+          message: "Failed to upload image",
+          error: uploadError.message
+        });
+      }
     }
 
     // Create restaurant

@@ -1,67 +1,66 @@
 import {  DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 
-const Menu = sequelize.define('Menu', {
+const Driver = sequelize.define('Driver', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    restaurant_id: {
+    user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'restaurants',
+            model: 'users',
             key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
     },
-    title: {
+    vehicle_type: {
         type: DataTypes.STRING,
-        allowNull: true
-    },
-    description: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    price: {
-        type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     },
-    image: {
+    vehicle_license_plate: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    vehicle_color: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    category: {
-        type: DataTypes.STRING,
-        allowNull: true
+    rating: {
+        type: DataTypes.DECIMAL(2, 1),
+        allowNull: true,
+        defaultValue: null
     },
     is_available: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
     },
-    preparation_time: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    ingredients: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
+    total_reviews: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    }
 }, {
-    tableName: 'menus',
+    tableName: 'drivers',
     timestamps: true
 });
 
+
 // Define associations
-Menu.associate = (models) => {
-    Menu.belongsTo(models.Restaurant, {
-        foreignKey: 'restaurant_id',
-        as: 'restaurant'
+
+Driver.associate = (models) => {
+    Driver.belongsTo(models.User, {
+        foreignKey: 'user_id',
+        as: 'driver'
     });
+   
 };
 
-Menu.sync()
-export default Menu;
+
+Driver.sync();
+export default Driver;

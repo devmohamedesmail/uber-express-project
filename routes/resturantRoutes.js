@@ -9,6 +9,9 @@ import {
   toggleRestaurantStatus,
   verifyRestaurant
 } from '../controllers/restaurants_controller.js';
+import multer from 'multer';
+const storage = multer.memoryStorage(); // store file in memory buffer
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -17,7 +20,7 @@ router.get('/', getAllRestaurants);
 router.get('/:id', getRestaurantById);
 
 // Protected routes (require authentication)
-router.post('/', createRestaurant);
+router.post('/', upload.single('image'), createRestaurant);
 router.get('/my/restaurant', getMyRestaurant);
 router.put('/:id', updateRestaurant);
 router.delete('/:id', deleteRestaurant);

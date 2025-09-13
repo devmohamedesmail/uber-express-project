@@ -9,50 +9,24 @@ const Restaurant = sequelize.define('Restaurant', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     image: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    location: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     address: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true
     },
     phone: {
         type: DataTypes.STRING,
-        allowNull: false
-    },
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
-    description: {
-        type: DataTypes.TEXT,
         allowNull: true
     },
-    cuisine_type: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
+    
     opening_hours: {
         type: DataTypes.JSON,
         allowNull: true
-    },
-    delivery_fee: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: true,
-        defaultValue: 0.00
-    },
-    minimum_order: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: true,
-        defaultValue: 0.00
     },
     delivery_time: {
         type: DataTypes.STRING,
