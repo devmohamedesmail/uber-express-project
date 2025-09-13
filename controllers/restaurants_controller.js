@@ -45,12 +45,12 @@ export const createRestaurant = async (req, res) => {
     }
 
     // Validate required fields
-    if (!name || !location || !address || !phone || !email) {
-      return res.status(400).json({
-        success: false,
-        message: "Name, location, address, phone, and email are required"
-      });
-    }
+    // if (!name || !location || !address || !phone ) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Name, location, address, phone, and email are required"
+    //   });
+    // }
 
     // Handle image upload to Cloudinary
     let imageUrl = image; // Use provided image URL if no file uploaded
