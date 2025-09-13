@@ -89,7 +89,6 @@ export const createRestaurant = async (req, res) => {
       phone,
       description,
       opening_hours,
-      minimum_order: minimum_order || 0.00,
       delivery_time,
       user_id: userId
     });
