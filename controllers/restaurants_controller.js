@@ -12,15 +12,10 @@ export const createRestaurant = async (req, res) => {
       userId,
       name,
       image,
-      location,
       address,
       phone,
-      email,
       description,
-      cuisine_type,
       opening_hours,
-      delivery_fee,
-      minimum_order,
       delivery_time
     } = req.body;
 
@@ -90,14 +85,10 @@ export const createRestaurant = async (req, res) => {
     const restaurant = await Restaurant.create({
       name,
       image: imageUrl,
-      location,
       address,
       phone,
-      email,
       description,
-      cuisine_type,
       opening_hours,
-      delivery_fee: delivery_fee || 0.00,
       minimum_order: minimum_order || 0.00,
       delivery_time,
       user_id: userId

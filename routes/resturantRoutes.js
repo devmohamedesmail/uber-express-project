@@ -22,7 +22,7 @@ router.get('/:id', getRestaurantById);
 // Protected routes (require authentication)
 router.post('/', upload.single('image'), createRestaurant);
 router.get('/my/restaurant', getMyRestaurant);
-router.put('/:id', updateRestaurant);
+router.put('/:id', upload.single('image'), updateRestaurant);
 router.delete('/:id', deleteRestaurant);
 router.patch('/:id/toggle-status', toggleRestaurantStatus);
 
