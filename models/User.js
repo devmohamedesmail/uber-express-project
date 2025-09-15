@@ -1,4 +1,4 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 
 const User = sequelize.define('User', {
@@ -36,14 +36,14 @@ User.associate = (models) => {
         foreignKey: 'user_id',
         as: 'restaurant'
     });
-};
 
-User.associate = (models) => {
     User.hasOne(models.Driver, {
         foreignKey: 'user_id',
         as: 'driver'
     });
 };
+
+
 
 
 

@@ -33,23 +33,10 @@ const Menu = sequelize.define('Menu', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    category: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    is_available: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-    },
-    preparation_time: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    ingredients: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
+   
+   
+   
+    
 }, {
     tableName: 'menus',
     timestamps: true

@@ -1,4 +1,4 @@
-import { Sequelize, DataTypes } from "sequelize";
+import {  DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 
 const Restaurant = sequelize.define('Restaurant', {
@@ -23,9 +23,13 @@ const Restaurant = sequelize.define('Restaurant', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    
-    opening_hours: {
-        type: DataTypes.JSON,
+
+    start_time:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    end_time:{
+        type: DataTypes.STRING,
         allowNull: true
     },
     delivery_time: {

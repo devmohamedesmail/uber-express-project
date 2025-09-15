@@ -52,13 +52,11 @@ const Driver = sequelize.define('Driver', {
 
 
 // Define associations
-
 Driver.associate = (models) => {
     Driver.belongsTo(models.User, {
         foreignKey: 'user_id',
         as: 'driver'
     });
-   
 };
 
 

@@ -1,8 +1,8 @@
 import User from '../models/User.js';
-import { Op } from 'sequelize';
-import { v2 as cloudinary } from 'cloudinary';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import Restaurant from '../models/Restaurant.js';
+
+
 
 // Create a new restaurant
 export const createRestaurant = async (req, res) => {
@@ -14,8 +14,8 @@ export const createRestaurant = async (req, res) => {
       image,
       address,
       phone,
-      description,
-      opening_hours,
+      start_time,
+      end_time,
       delivery_time
     } = req.body;
 
@@ -44,35 +44,16 @@ export const createRestaurant = async (req, res) => {
       });
     }
 
-    // Validate required fields
-    // if (!name || !location || !address || !phone ) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Name, location, address, phone, and email are required"
-    //   });
-    // }
+   
 
     // Handle image upload to Cloudinary
-    let imageUrl = image; // Use provided image URL if no file uploaded
-    // if (req.file) {
-    //   const uploadResult = await new Promise((resolve, reject) => {
-    //     const stream = cloudinary.uploader.upload_stream(
-    //       { folder: 'restaurants' },
-    //       (error, result) => {
-    //         if (error) return reject(error);
-    //         resolve(result);
-    //       }
-    //     );
-    //     stream.end(req.file.buffer);
-    //   });
-    //   imageUrl = uploadResult.secure_url;
-    // }
+    let imageUrl = image; 
+  
     if (req.file) {
       try {
         const uploadResult = await uploadToCloudinary(req.file.buffer, 'restaurants');
         imageUrl = uploadResult.secure_url;
       } catch (uploadError) {
-        console.error('Cloudinary upload error:', uploadError);
         return res.status(400).json({
           success: false,
           message: "Failed to upload image",
@@ -87,8 +68,8 @@ export const createRestaurant = async (req, res) => {
       image: imageUrl,
       address,
       phone,
-      description,
-      opening_hours,
+      start_time,
+      end_time,
       delivery_time,
       user_id: userId
     });
@@ -112,23 +93,8 @@ export const createRestaurant = async (req, res) => {
 // Get all restaurants
 export const getAllRestaurants = async (req, res) => {
   try {
-    const { page = 1, limit = 10, cuisine_type, location, is_active = true } = req.query;
-    const offset = (page - 1) * limit;
-
-    // Build where clause for filtering
-    const whereClause = { is_active };
-    if (cuisine_type) whereClause.cuisine_type = cuisine_type;
-    if (location) whereClause.location = { [Op.iLike]: `%${location}%` };
-
+    const { page = 1, limit = 10 } = req.query;
     const restaurants = await Restaurant.findAndCountAll({
-      where: whereClause,
-      // include: [{
-      //   model: User,
-      //   as: 'owner',
-      //   attributes: ['id', 'name', 'identifier']
-      // }],
-      limit: parseInt(limit),
-      offset: parseInt(offset),
       order: [['rating', 'DESC'], ['createdAt', 'DESC']]
     });
 
@@ -147,7 +113,6 @@ export const getAllRestaurants = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get restaurants error:', error);
     res.status(500).json({
       success: false,
       message: "Failed to retrieve restaurants",
@@ -160,14 +125,7 @@ export const getAllRestaurants = async (req, res) => {
 export const getRestaurantById = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const restaurant = await Restaurant.findByPk(id, {
-      // include: [{
-      //   model: User,
-      //   as: 'owner',
-      //   attributes: ['id', 'name', 'identifier']
-      // }]
-    });
+    const restaurant = await Restaurant.findByPk(id);
 
     if (!restaurant) {
       return res.status(404).json({
@@ -276,17 +234,16 @@ export const updateRestaurant = async (req, res) => {
 
     // Handle image upload to Cloudinary
     if (req.file) {
-      const uploadResult = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: 'restaurants' },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
-      updateData.image = uploadResult.secure_url;
+      try {
+        const uploadResult = await uploadToCloudinary(req.file.buffer, 'restaurants');
+        updateData.image = uploadResult.secure_url;
+      } catch (uploadError) {
+        return res.status(400).json({
+          success: false,
+          message: "Failed to upload image",
+          error: uploadError.message
+        });
+      }
     }
 
     // Update restaurant
