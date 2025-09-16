@@ -1,6 +1,6 @@
 import Menu from '../models/Menu.js';
-import Restaurant from '../models/Restaurant.js';
 import { v2 as cloudinary } from 'cloudinary';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 
 // Create menu item
 export const createMenuItem = async (req, res) => {
