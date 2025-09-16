@@ -6,6 +6,9 @@ import {
   updateMenuItem,
   deleteMenuItem
 } from '../controllers/menu_controller.js';
+import multer from 'multer';
+const storage = multer.memoryStorage(); // store file in memory buffer
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -14,8 +17,8 @@ router.get('/restaurant/:restaurant_id', getRestaurantMenuItems);          // GE
 router.get('/item/:id', getMenuItemById);                                // GET /menu/item/:id
 
 // Protected routes - Menu management (require authentication)
-router.post('/create', createMenuItem);                                  // POST /menu/create
-router.put('/item/:id', updateMenuItem);                                 // PUT /menu/item/:id
+router.post('/create', upload.single('image'), createMenuItem);                                  // POST /menu/create
+router.put('/item/:id', upload.single('image'), updateMenuItem);                                 // PUT /menu/item/:id
 router.delete('/item/:id', deleteMenuItem);                              // DELETE /menu/item/:id
 
 export { router as menuRoutes };
