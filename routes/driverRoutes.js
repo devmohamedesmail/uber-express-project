@@ -9,6 +9,9 @@ import {
   toggleDriverAvailability,
   getAvailableDriversByVehicleType
 } from '../controllers/driver_controller.js';
+import multer from 'multer';
+const storage = multer.memoryStorage(); // store file in memory buffer
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -18,7 +21,7 @@ router.get('/:id', getDriverById);                                       // GET 
 router.get('/available/:vehicle_type', getAvailableDriversByVehicleType); // GET /drivers/available/:vehicle_type
 
 // Protected routes - Driver management (require authentication)
-router.post('/', createDriver);                                          // POST /drivers
+router.post('/',upload.single('image'), createDriver);                                          // POST /drivers
 router.get('/my/profile', getMyDriverProfile);                           // GET /drivers/my/profile
 router.put('/:id', updateDriver);                                        // PUT /drivers/:id
 router.delete('/:id', deleteDriver);                                     // DELETE /drivers/:id

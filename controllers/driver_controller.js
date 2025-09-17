@@ -1,6 +1,7 @@
 import Driver from '../models/Driver.js';
 import User from '../models/User.js';
 import { Op } from 'sequelize';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 
 /**
  * CREATE DRIVER PROFILE
@@ -13,7 +14,8 @@ export const createDriver = async (req, res) => {
       userId,
       vehicle_type,
       vehicle_license_plate,
-      vehicle_color
+      vehicle_color,
+      image
     } = req.body;
 
     // Validate required fields
@@ -61,12 +63,27 @@ export const createDriver = async (req, res) => {
       });
     }
 
+    let imageUrl = image;
+        if (req.file) {
+            try {
+                const uploadResult = await uploadToCloudinary(req.file.buffer, 'menu');
+                imageUrl = uploadResult.secure_url;
+            } catch (uploadError) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Failed to upload image",
+                    error: uploadError.message
+                });
+            }
+        }
+
     // Create driver profile
     const driver = await Driver.create({
       user_id: userId,
       vehicle_type,
       vehicle_license_plate: vehicle_license_plate.toUpperCase(),
-      vehicle_color
+      vehicle_color,
+      image: imageUrl
     });
 
     res.status(201).json({

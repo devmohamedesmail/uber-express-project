@@ -30,6 +30,10 @@ const Driver = sequelize.define('Driver', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    image: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     rating: {
         type: DataTypes.DECIMAL(2, 1),
         allowNull: true,
