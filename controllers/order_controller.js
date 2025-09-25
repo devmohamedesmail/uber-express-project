@@ -1,6 +1,6 @@
 import Order from '../models/Order.js';
 import User from '../models/User.js';
-import Restaurant from '../models/restaurant.js';
+import Restaurant from '../models/Restaurant.js';
 // import { Op, sequelize } from 'sequelize';
 
 // Create new order
