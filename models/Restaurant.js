@@ -82,6 +82,10 @@ Restaurant.associate = (models) => {
         foreignKey: 'restaurant_id',
         as: 'menus'
     });
+    Restaurant.hasMany(models.Order, {
+        foreignKey: 'restaurant_id',
+        as: 'orders'
+    });
 };
 
 Restaurant.sync()

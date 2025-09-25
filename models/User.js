@@ -41,6 +41,10 @@ User.associate = (models) => {
         foreignKey: 'user_id',
         as: 'driver'
     });
+    User.hasMany(models.Order, {
+        foreignKey: 'user_id',
+        as: 'orders'
+    });
 };
 
 
