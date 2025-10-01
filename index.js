@@ -9,6 +9,7 @@ import { restaurantRoutes } from './routes/resturantRoutes.js';
 import { menuRoutes } from './routes/menuRoutes.js';
 import { driverRoutes } from './routes/driverRoutes.js';
 import { orderRoutes } from './routes/orderRoutes.js';
+import { vehicleRoutes } from './routes/vehicleRoutes.js';
 import { v2 as cloudinary } from 'cloudinary';
 
 
@@ -36,6 +37,7 @@ app.use('/api/resturants', restaurantRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/drivers', driverRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/vehicles', vehicleRoutes);
 
 
 

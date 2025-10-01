@@ -55,6 +55,10 @@ const Order = sequelize.define("Order", {
     delivered_at: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+    phone:{
+        type: DataTypes.STRING,
+        allowNull: true
     }
 
 }, {

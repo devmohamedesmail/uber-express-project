@@ -11,7 +11,8 @@ export const createOrder = async (req, res) => {
       restaurant_id,
       order,
       total_price,
-      delivery_address
+      delivery_address,
+      phone
     } = req.body;
 
     // Create order
@@ -22,6 +23,7 @@ export const createOrder = async (req, res) => {
       total_price,
       delivery_address,
       status: 'pending',
+      phone,
       placed_at: new Date()
     });
 
