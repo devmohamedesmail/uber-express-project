@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 
 
+
 const Order = sequelize.define("Order", {
     id: {
         type: DataTypes.INTEGER,
@@ -66,7 +67,8 @@ const Order = sequelize.define("Order", {
 Order.associate = (models) => {
     Order.belongsTo(models.User, {
         foreignKey: 'user_id',
-        as: 'customer'
+        as: 'user',
+        
     });
 
     Order.belongsTo(models.Restaurant, {

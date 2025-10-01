@@ -60,28 +60,35 @@ export const getAllOrders = async (req, res) => {
 
     const orders = await Order.findAndCountAll({
       where: whereClause,
-      include: [
-        {
-          model: User,
-          as: 'customer',
-          attributes: ['id', 'name', 'identifier']
-        },
-        {
-          model: Restaurant,
-          as: 'restaurant',
-          attributes: ['id', 'name', 'address', 'phone']
-        }
-      ],
       limit: parseInt(limit),
       offset: parseInt(offset),
       order: [['placed_at', 'DESC']]
     });
 
+    // Get user and restaurant information separately for each order
+    const ordersWithDetails = await Promise.all(
+      orders.rows.map(async (order) => {
+        const user = await User.findByPk(order.user_id, {
+          attributes: ['id', 'name', 'identifier']
+        });
+        
+        const restaurant = await Restaurant.findByPk(order.restaurant_id, {
+          attributes: ['id', 'name', 'address', 'phone']
+        });
+        
+        return {
+          ...order.toJSON(),
+          user: user || null,
+          restaurant: restaurant || null
+        };
+      })
+    );
+
     res.status(200).json({
       success: true,
       message: "Orders retrieved successfully",
       data: {
-        orders: orders.rows,
+        orders: ordersWithDetails,
         pagination: {
           current_page: parseInt(page),
           total_pages: Math.ceil(orders.count / limit),
@@ -105,20 +112,7 @@ export const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const order = await Order.findByPk(id, {
-      include: [
-        {
-          model: User,
-          as: 'customer',
-          attributes: ['id', 'name', 'identifier']
-        },
-        {
-          model: Restaurant,
-          as: 'restaurant',
-          attributes: ['id', 'name', 'address', 'phone']
-        }
-      ]
-    });
+    const order = await Order.findByPk(id);
 
     if (!order) {
       return res.status(404).json({
@@ -127,10 +121,25 @@ export const getOrderById = async (req, res) => {
       });
     }
 
+    // Get user and restaurant information separately
+    const user = await User.findByPk(order.user_id, {
+      attributes: ['id', 'name', 'identifier']
+    });
+    
+    const restaurant = await Restaurant.findByPk(order.restaurant_id, {
+      attributes: ['id', 'name', 'address', 'phone']
+    });
+
+    const orderWithDetails = {
+      ...order.toJSON(),
+      user: user || null,
+      restaurant: restaurant || null
+    };
+
     res.status(200).json({
       success: true,
       message: "Order retrieved successfully",
-      data: order
+      data: orderWithDetails
     });
 
   } catch (error) {
@@ -154,23 +163,29 @@ export const getUserOrders = async (req, res) => {
 
     const orders = await Order.findAndCountAll({
       where: whereClause,
-      include: [
-        {
-          model: Restaurant,
-          as: 'restaurant',
-          attributes: ['id', 'name', 'address', 'phone']
-        }
-      ],
       limit: parseInt(limit),
       offset: parseInt(offset),
       order: [['placed_at', 'DESC']]
     });
 
+    // Get restaurant information separately for each order
+    const ordersWithRestaurants = await Promise.all(
+      orders.rows.map(async (order) => {
+        const restaurant = await Restaurant.findByPk(order.restaurant_id, {
+          attributes: ['id', 'name', 'address', 'phone']
+        });
+        return {
+          ...order.toJSON(),
+          restaurant: restaurant || null
+        };
+      })
+    );
+
     res.status(200).json({
       success: true,
       message: "User orders retrieved successfully",
       data: {
-        orders: orders.rows,
+        orders: ordersWithRestaurants,
         pagination: {
           current_page: parseInt(page),
           total_pages: Math.ceil(orders.count / limit),
@@ -193,37 +208,30 @@ export const getUserOrders = async (req, res) => {
 export const getRestaurantOrders = async (req, res) => {
   try {
     const { restaurant_id } = req.params;
-    const { page = 1, limit = 10, status } = req.query;
-    const offset = (page - 1) * limit;
-
-    const whereClause = { restaurant_id };
-    if (status) whereClause.status = status;
 
     const orders = await Order.findAndCountAll({
-      where: whereClause,
-      include: [
-        {
-          model: User,
-          as: 'customer',
-          attributes: ['id', 'name', 'identifier']
-        }
-      ],
-      limit: parseInt(limit),
-      offset: parseInt(offset),
+      where: { restaurant_id },
       order: [['placed_at', 'DESC']]
     });
+
+    // Get user information separately for each order
+    const ordersWithUsers = await Promise.all(
+      orders.rows.map(async (order) => {
+        const user = await User.findByPk(order.user_id, {
+          attributes: ['id', 'name', 'identifier']
+        });
+        return {
+          ...order.toJSON(),
+          user: user || null
+        };
+      })
+    );
 
     res.status(200).json({
       success: true,
       message: "Restaurant orders retrieved successfully",
       data: {
-        orders: orders.rows,
-        pagination: {
-          current_page: parseInt(page),
-          total_pages: Math.ceil(orders.count / limit),
-          total_orders: orders.count,
-          per_page: parseInt(limit)
-        }
+        orders: ordersWithUsers
       }
     });
 
@@ -303,25 +311,27 @@ export const updateOrder = async (req, res) => {
       });
     }
 
-    const updatedOrder = await Order.findByPk(id, {
-      include: [
-        {
-          model: User,
-          as: 'customer',
-          attributes: ['id', 'name', 'identifier']
-        },
-        {
-          model: Restaurant,
-          as: 'restaurant',
-          attributes: ['id', 'name', 'address', 'phone']
-        }
-      ]
+    const updatedOrder = await Order.findByPk(id);
+    
+    // Get user and restaurant information separately
+    const user = await User.findByPk(updatedOrder.user_id, {
+      attributes: ['id', 'name', 'identifier']
     });
+    
+    const restaurant = await Restaurant.findByPk(updatedOrder.restaurant_id, {
+      attributes: ['id', 'name', 'address', 'phone']
+    });
+
+    const orderWithDetails = {
+      ...updatedOrder.toJSON(),
+      user: user || null,
+      restaurant: restaurant || null
+    };
 
     res.status(200).json({
       success: true,
       message: "Order updated successfully",
-      data: updatedOrder
+      data: orderWithDetails
     });
 
   } catch (error) {
@@ -404,58 +414,20 @@ export const deleteOrder = async (req, res) => {
 // Get order statistics
 export const getOrderStatistics = async (req, res) => {
   try {
-    const { restaurant_id, user_id, start_date, end_date } = req.query;
+    const { restaurant_id, user_id } = req.query;
     
     const whereClause = {};
     if (restaurant_id) whereClause.restaurant_id = restaurant_id;
     if (user_id) whereClause.user_id = user_id;
-    
-    if (start_date && end_date) {
-      whereClause.placed_at = {
-        [Op.between]: [new Date(start_date), new Date(end_date)]
-      };
-    }
 
     // Get total orders count
     const totalOrders = await Order.count({ where: whereClause });
-
-    // Get orders by status
-    const ordersByStatus = await Order.findAll({
-      where: whereClause,
-      attributes: ['status', [sequelize.fn('COUNT', sequelize.col('status')), 'count']],
-      group: ['status'],
-      raw: true
-    });
-
-    // Get total revenue
-    const revenueResult = await Order.findOne({
-      where: {
-        ...whereClause,
-        status: 'delivered'
-      },
-      attributes: [[sequelize.fn('SUM', sequelize.col('total_price')), 'total_revenue']],
-      raw: true
-    });
-
-    const totalRevenue = revenueResult?.total_revenue || 0;
-
-    // Get average order value
-    const avgOrderResult = await Order.findOne({
-      where: whereClause,
-      attributes: [[sequelize.fn('AVG', sequelize.col('total_price')), 'avg_order_value']],
-      raw: true
-    });
-
-    const avgOrderValue = avgOrderResult?.avg_order_value || 0;
 
     res.status(200).json({
       success: true,
       message: "Order statistics retrieved successfully",
       data: {
-        total_orders: totalOrders,
-        orders_by_status: ordersByStatus,
-        total_revenue: parseFloat(totalRevenue),
-        average_order_value: parseFloat(avgOrderValue)
+        total_orders: totalOrders
       }
     });
 
